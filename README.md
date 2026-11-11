@@ -1,13 +1,11 @@
 # English LZK practice app
 
-Upload the files in this folder to the root of a GitHub repository and enable **GitHub Pages** from the repository settings.
+Upload all files in this folder to the root of your GitHub Pages repository.
 
-- `index.html` contains the complete app.
-- `.nojekyll` keeps GitHub Pages in simple static-site mode.
-- No external libraries, images, or audio files are required.
+Required files:
+- `index.html`
+- `.nojekyll`
 
-## Device-local progress
+`README.md` is optional for the website itself.
 
-The app stores sound preference and exercise results in the browser's `localStorage` on each device. For each completed exercise it remembers the **last score, best score, and number of attempts**. This stays on that browser/device and is not uploaded to GitHub or sent anywhere.
-
-Clearing browser/site data or using a different browser/device starts with fresh progress.
+Note: `.nojekyll` is a hidden dotfile, so some file browsers may hide it by default. It is included in the ZIP.
