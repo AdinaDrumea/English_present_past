@@ -11,11 +11,13 @@
 
 .sound-btn{display:inline-flex;align-items:center;gap:7px;border:1px solid #9db7a4;background:rgba(255,255,255,.86);color:#185f52;border-radius:999px;padding:9px 12px;font-weight:850;cursor:pointer;box-shadow:0 4px 12px rgba(38,50,56,.06);transition:transform .12s ease,box-shadow .12s ease,background .12s ease}.sound-btn:hover{transform:translateY(-1px);box-shadow:0 7px 16px rgba(38,50,56,.10)}.sound-btn:active,.btn:active,.tile:active,.pick:active{transform:translateY(1px) scale(.99)}.top-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}.btn,.tile,.pick,.sound-btn{transition:transform .12s ease,box-shadow .12s ease,border-color .12s ease,background .12s ease}.btn:focus-visible,.tile:focus-visible,.pick:focus-visible,.sound-btn:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid rgba(20,119,111,.25);outline-offset:2px}.feedback.ok{animation:popIn .25s ease}.feedback.bad{animation:shakeIn .28s ease}@keyframes popIn{0%{transform:scale(.985);opacity:.55}100%{transform:scale(1);opacity:1}}@keyframes shakeIn{0%,100%{transform:translateX(0)}35%{transform:translateX(-3px)}70%{transform:translateX(3px)}}body{background:linear-gradient(180deg,#f2f5ef 0%,#e9efe8 100%);min-height:100vh}.card{backdrop-filter:blur(2px)}
 
+
+.drill-shell{max-width:640px;margin:0 auto}.drill-progress{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:12px;font-size:14px;color:#617069}.drill-card{background:#fff;border:2px solid #66716f;border-radius:18px;padding:24px;margin:12px 0;box-shadow:0 5px 18px rgba(38,50,56,.06)}.drill-prompt{font-size:26px;font-weight:850;margin:4px 0 18px}.drill-answer-row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}.drill-answer{flex:1;min-width:180px;font-size:20px;padding:12px 13px;border:1px solid #aebeb2;border-radius:10px}.drill-answer.good{background:var(--green);border-color:#5a9e75}.drill-answer.bad{background:var(--red);border-color:#cb6e64}.drill-message{margin-top:14px;padding:11px 13px;border-radius:11px;font-weight:800}.drill-message.ok{background:var(--green);color:#1e623e}.drill-message.bad{background:var(--red);color:#8e332c}.char-btn{border:1px solid #9db7a4;background:#fff;border-radius:10px;padding:10px 13px;font-weight:900;cursor:pointer}.mode-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}.mode-btn{border:1px solid #aac0b0;background:#fff;border-radius:14px;padding:13px;font-weight:850;cursor:pointer;text-align:center}.mode-btn:hover{border-color:#6d9c80;background:#f7fbf8}.drill-finish{text-align:center;padding:8px 0}.drill-finish h3{font-size:26px;margin-bottom:6px}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="top"><div><div class="brand">English LZK 19.11</div><div class="sub">Exercises grouped into three clear topics</div></div><div class="top-actions"><button id="soundBtn" class="sound-btn" type="button" onclick="toggleSound()" aria-label="Toggle sound">🔊 Sound on</button><button id="homeBtn" class="btn hidden" onclick="showHome()">Home</button></div></div>
+  <div class="top"><div><div class="brand">English LZK 19.11</div><div class="sub">Exercises grouped by Lernziel</div></div><div class="top-actions"><button id="soundBtn" class="sound-btn" type="button" onclick="toggleSound()" aria-label="Toggle sound">🔊 Sound on</button><button id="homeBtn" class="btn hidden" onclick="showHome()">Home</button></div></div>
   <section id="home"></section>
   <section id="tests" class="hidden"></section>
   <section id="runner" class="hidden"></section>
@@ -54,12 +56,14 @@ function toggleSound(){soundEnabled=!soundEnabled;localStorage.setItem('englishL
 const topics={
  have:{icon:'&#129386;',title:'Have got',desc:'possession: positive, negative, questions and short answers',exercises:['haveComplete','haveQuestions']},
  present:{icon:'&#9728;',title:'Present simple + to be',desc:'positive + negative sentences, verb conjugation and am / is / are',exercises:['presentFill','presentConjugator','bePresentSheet']},
- past:{icon:'&#9201;',title:'Past simple + was / were',desc:'positive + negative sentences, was/were, spelling and irregular verbs',exercises:['wasWereSheet','regularForms','pastSentences','irregularTable']}
+ past:{icon:'&#9201;',title:'Past simple + was / were',desc:'was/were, targeted past forms, sentences and irregular verbs',exercises:['wasWereSheet','regularForms','pastSentences','irregularTable']},
+ shortforms:{icon:'&#9998;',title:'Short forms',desc:"I'm, you're, I've got, hasn't, wasn't and other contractions from the preparation pages",exercises:['contractions']}
 };
 const labels={
  haveComplete:'Worksheet 1: Complete have got',haveQuestions:'Worksheet 2: Questions + short answers',
  presentFill:'Worksheet 1: Present simple - 13 sentences',presentConjugator:'Worksheet 2: Verb conjugator',bePresentSheet:'Worksheet 3: To be - present',
- wasWereSheet:'Worksheet 1: Was / were',regularForms:'Worksheet 2: Regular past forms + spelling',pastSentences:'Worksheet 3: Past simple in sentences',irregularTable:'Worksheet 4: Irregular verbs'
+ wasWereSheet:'Worksheet 1: Was / were',regularForms:'Practice 2: Past forms - one at a time',pastSentences:'Worksheet 3: Past simple in sentences',irregularTable:'Worksheet 4: Irregular verbs',
+ contractions:'Short forms: contract or expand'
 };
 function normalizeScoreRecord(r){
  if(!r)return null;
@@ -140,7 +144,7 @@ const wasWereNegSent=[
 ];
 const underlineText=`Yesterday was a great day. It wasn't a normal day; it was my birthday. My friends and I weren't at school, we were in a zoo. There were a lot of animals. My favourite animal wasn't the elephant, it was the giraffe. There was a very tall one. I was very happy. At lunchtime, we were in a restaurant. We were very hungry, and the food was good. It was a perfect day. How was your last birthday?`;
 const beBuild=[['They + (to) be + at school + yesterday.','They were at school yesterday.'],['Linda + (to) be + happy + last week.','Linda was happy last week.'],['I + (to) be + at home + yesterday.','I was at home yesterday.'],['Alex + (to) be + in Italy + last summer.','Alex was in Italy last summer.']];
-const regularForms={ask:'asked',play:'played',land:'landed',order:'ordered',push:'pushed',help:'helped',talk:'talked',warn:'warned',point:'pointed',listen:'listened',plan:'planned',move:'moved',travel:'travelled',start:'started',like:'liked',stop:'stopped',smile:'smiled',cry:'cried',dance:'danced',try:'tried',live:'lived',study:'studied',stay:'stayed',shop:'shopped',walk:'walked',carry:'carried',look:'looked',love:'loved',cook:'cooked',work:'worked',pull:'pulled',want:'wanted',bake:'baked',watch:'watched',open:'opened'};
+const regularForms={learn:'learned',ask:'asked',play:'played',land:'landed',order:'ordered',push:'pushed',help:'helped',talk:'talked',warn:'warned',point:'pointed',listen:'listened',plan:'planned',move:'moved',travel:'travelled',start:'started',like:'liked',stop:'stopped',smile:'smiled',cry:'cried',dance:'danced',try:'tried',live:'lived',study:'studied',stay:'stayed',shop:'shopped',walk:'walked',carry:'carried',look:'looked',love:'loved',cook:'cooked',work:'worked',pull:'pulled',want:'wanted',bake:'baked',watch:'watched',open:'opened'};
 const spellingLines=[['John','stoped','smoking last year.','stopped',true],['Mary','planned','her trip yesterday.','planned',false],['I','danced','on the table.','danced',false],['I','studyed','for the test last week.','studied',true],['I really','likd','her.','liked',true],['I','tryed','to play basketball yesterday.','tried',true],['We','traveled','to Japan last year.','travelled',true],['They','cancelled','their flight.','cancelled',false]];
 const pastFill=[['Susi','(play) a game with James last Saturday.','played'],['Marina','(walk) along the beach last summer.','walked'],['Ben','(look) for his wallet in the morning.','looked'],['Ken','(talk) to me at the party last week.','talked'],['The cat','(try) to catch a bird five minutes ago.','tried'],['I','(study) English yesterday.','studied'],['My friends and I','(order) pizza last night.','ordered'],['Dad','(visit) his aunt last Monday.','visited'],['I','(stop) smoking last year.','stopped'],['Eric','(kiss) Sarah at the party last Saturday.','kissed'],['They','(play) the new song last night.','played'],['My parents','(help) me a lot last year.','helped'],['The Millers','(want) to speak to me yesterday.','wanted'],['Kevin','(cry) a lot yesterday.','cried'],['Amy and Maggie','(clean) the whole house yesterday.','cleaned'],['We','(travel) to Spain last year.','travelled']];
 const pastNeg=[
@@ -154,9 +158,37 @@ const pastNeg=[
 const pastBuild=[['HE + (to) watch + TV + yesterday','He watched TV yesterday.'],['THEY + (to) talk + to me + last week','They talked to me last week.'],['I + (to) play + football + last Friday','I played football last Friday.'],['WE + (to) help + her + 5 minutes ago','We helped her 5 minutes ago.'],['MUM + (to) bake + a cake + yesterday','Mum baked a cake yesterday.'],['TOM + (to) cook + pasta + last week','Tom cooked pasta last week.'],['YOUR DOG + (to) play + with me','Your dog played with me.']];
 const irregular={have:'had',go:'went',wear:'wore',do:'did',take:'took',make:'made',give:'gave',hear:'heard',write:'wrote',see:'saw'};
 
+// Short, mixed past-form practice: her current focus words plus a few contrasting forms
+// so a spelling pattern (for example consonant doubling) is never the only pattern she sees.
+const pastDrillBank=[
+ {verb:'learn',answer:'learned',focus:true},{verb:'travel',answer:'travelled',focus:true},
+ {verb:'stop',answer:'stopped',focus:true},{verb:'cry',answer:'cried',focus:true},
+ {verb:'study',answer:'studied',focus:true},{verb:'shop',answer:'shopped',focus:true},
+ {verb:'carry',answer:'carried',focus:true},{verb:'see',answer:'saw',focus:true},
+ {verb:'hear',answer:'heard',focus:true},{verb:'open',answer:'opened',focus:true},
+ {verb:'talk',answer:'talked',focus:true},{verb:'play',answer:'played',focus:false},
+ {verb:'like',answer:'liked',focus:false},{verb:'want',answer:'wanted',focus:false}
+];
+
+// Contractions that appear in the supplied preparation pages.
+const contractionPairs=[
+ {long:'I am',short:"I'm"},{long:'you are',short:"you're"},
+ {long:'he is',short:"he's",expandPrompt:"He's happy. → ___ happy.",contractPrompt:'He is happy. → ___ happy.',expandAnswer:'He is',contractAnswer:"He's"},
+ {long:'she is',short:"she's",expandPrompt:"She's at school. → ___ at school.",contractPrompt:'She is at school. → ___ at school.',expandAnswer:'She is',contractAnswer:"She's"},
+ {long:'it is',short:"it's",expandPrompt:"It's cold. → ___ cold.",contractPrompt:'It is cold. → ___ cold.',expandAnswer:'It is',contractAnswer:"It's"},
+ {long:'we are',short:"we're"},{long:'they are',short:"they're"},
+ {long:'I have got',short:"I've got"},
+ {long:'he has got',short:"he's got",expandPrompt:"He's got a sandwich. → ___ a sandwich.",contractPrompt:'He has got a sandwich. → ___ a sandwich.',expandAnswer:'He has got',contractAnswer:"He's got"},
+ {long:'you have not got',short:"you haven't got"},
+ {long:'she has not got',short:"she hasn't got"},
+ {long:'was not',short:"wasn't"},{long:'were not',short:"weren't"}
+];
+let pastDrillState=null, contractionState=null;
+
+
 let current={id:null,topic:null};
 function startExercise(id,topic){current={id,topic};renderExercise();const card=$('#runner .card');if(card){const b=previousScoreBanner(id);if(b)card.insertAdjacentHTML('afterbegin',b)}view('runner');}
-function renderExercise(){const id=current.id;let body='';if(id==='haveComplete')body=renderHaveComplete();if(id==='haveQuestions')body=renderHaveQuestions();if(id==='presentFill')body=renderPresentFill();if(id==='presentConjugator')body=renderPresentConjugator();if(id==='bePresentSheet')body=renderBePresent();if(id==='wasWereSheet')body=renderWasWere();if(id==='regularForms')body=renderRegularForms();if(id==='pastSentences')body=renderPastSentences();if(id==='irregularTable')body=renderIrregular();$('#runner').innerHTML=`<div class="card"><div class="crumb">${topics[current.topic].title} &rsaquo; ${labels[id]}</div>${body}<div class="row" style="margin-top:18px"><button class="btn" onclick="openTopic('${current.topic}')">&larr; Back to ${topics[current.topic].title}</button></div></div>`;if(id==='presentConjugator')resetConjugator();}
+function renderExercise(){const id=current.id;let body='';if(id==='haveComplete')body=renderHaveComplete();if(id==='haveQuestions')body=renderHaveQuestions();if(id==='presentFill')body=renderPresentFill();if(id==='presentConjugator')body=renderPresentConjugator();if(id==='bePresentSheet')body=renderBePresent();if(id==='wasWereSheet')body=renderWasWere();if(id==='regularForms')body=renderRegularForms();if(id==='pastSentences')body=renderPastSentences();if(id==='irregularTable')body=renderIrregular();if(id==='contractions')body=renderContractions();$('#runner').innerHTML=`<div class="card"><div class="crumb">${topics[current.topic].title} &rsaquo; ${labels[id]}</div>${body}<div class="row" style="margin-top:18px"><button class="btn" onclick="openTopic('${current.topic}')">&larr; Back to ${topics[current.topic].title}</button></div></div>`;if(id==='presentConjugator')resetConjugator();if(id==='regularForms')startPastDrill();}
 function resultBox(correct,total){
  const pct=Math.round(correct/total*100),saved=saveDone(current.id,pct),r=saved.record;playResult(correct,total);
  const compare=saved.previous===null?`First saved attempt on this device.`:`Previous: <strong>${saved.previous}%</strong> · Best: <strong>${r.best}%</strong> · Attempts: <strong>${r.attempts}</strong>`;
@@ -187,9 +219,70 @@ function checkWasWere(){let c=0,total=0;
  const valid=new Set(['was',"wasn't",'were',"weren't"]);$$('.word').forEach(el=>el.classList.add('locked'));const toks=tokenize(underlineText);let underGood=true;toks.forEach((t,i)=>{if(/^\s+$/.test(t))return;const el=$(`.word[data-i="${i}"]`),target=valid.has(t.toLowerCase()),selected=el.classList.contains('selected');if(target&&selected){el.classList.add('correct')}else if(target&&!selected){underGood=false;el.classList.add('mistake')}else if(!target&&selected){underGood=false;el.classList.add('mistake')}});total++;if(underGood)c++;
  $$('.build').forEach(el=>{total++;const ok=answerOK(el.value,el.dataset.answer);if(ok)c++;markInput(el,ok,el.dataset.answer)});
  $('#feedback').innerHTML=resultBox(c,total)+`<div class="feedback info">In the underline exercise, correct selections are green. Anything missed or selected by mistake is red.</div>`;$('.btn.primary').disabled=true;}
-function renderRegularForms(){const entries=Object.entries(regularForms);return `<div class="worksheet"><h2>PAST SIMPLE - REGULAR VERBS</h2><div class="part"><h3>1. Form the Past Tense.</h3><table class="mini-table"><tr><th>verb</th><th>past simple</th></tr>${entries.map(([v,a])=>`<tr><td>(to) ${v}</td><td><input class="small-input regform" data-answer="${a}" autocomplete="off"></td></tr>`).join('')}</table></div><div class="part"><h3>2. Can you find all five spelling mistakes?</h3><p class="muted">Click the verb that is spelled incorrectly.</p>${spellingLines.map((r,i)=>`<div class="sheet-row"><div class="question-line">${i+1}. ${r[0]} <span class="spell-word" data-i="${i}" data-wrong="${r[4]}" data-correct="${r[3]}" onclick="toggleSpell(this)">${r[1]}</span> ${r[2]}</div><div></div></div>`).join('')}</div></div><div id="feedback"></div><div class="row" style="margin-top:14px"><button class="btn primary" onclick="checkRegularForms()">Check worksheet</button></div>`;}
-function toggleSpell(el){if(el.classList.contains('locked'))return;playSelect();el.classList.toggle('selected');}
-function checkRegularForms(){let c=0,total=0;$$('.regform').forEach(el=>{total++;const ok=answerOK(el.value,el.dataset.answer);if(ok)c++;markInput(el,ok,el.dataset.answer)});let spellGood=true;$$('.spell-word').forEach(el=>{el.classList.add('locked');const wrong=el.dataset.wrong==='true',selected=el.classList.contains('selected');if(wrong&&selected){el.classList.add('correct')}else if(wrong&&!selected){spellGood=false;el.classList.add('mistake');el.insertAdjacentHTML('afterend',` <span class="correction">${el.dataset.correct}</span>`)}else if(!wrong&&selected){spellGood=false;el.classList.add('mistake')}});total++;if(spellGood)c++;$('#feedback').innerHTML=resultBox(c,total);$('.btn.primary').disabled=true;}
+function renderRegularForms(){return `<div class="worksheet"><h2>PAST FORMS - FOCUS PRACTICE</h2><p class="directions">One verb at a time. Check each answer straight away. The set mixes different spelling patterns and irregular verbs.</p><div id="pastDrillHost" class="drill-shell"></div></div>`;}
+function startPastDrill(items=null){
+ const list=items&&items.length?items:shuffled(pastDrillBank);
+ pastDrillState={items:[...list],i:0,correct:0,mistakes:[]};renderPastDrillQuestion();
+}
+function renderPastDrillQuestion(){
+ const st=pastDrillState,host=$('#pastDrillHost');if(!host)return;
+ if(st.i>=st.items.length){finishPastDrill();return}
+ const o=st.items[st.i];
+ host.innerHTML=`<div class="drill-progress"><span>Question <strong>${st.i+1}</strong> of ${st.items.length}</span><span>${st.correct} correct so far</span></div><div class="drill-card"><div class="muted">Write the Past Simple form.</div><div class="drill-prompt">${o.verb} &rarr; ?</div><div class="drill-answer-row"><input id="pastDrillInput" class="drill-answer" autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter')checkPastDrill()"><button id="pastDrillCheck" class="btn primary" onclick="checkPastDrill()">Check</button></div><div id="pastDrillMessage"></div><div class="row" style="margin-top:14px"><button id="pastDrillNext" class="btn hidden" onclick="nextPastDrill()">Next &rarr;</button></div></div>`;
+ const inp=$('#pastDrillInput');if(inp)inp.focus();
+}
+function checkPastDrill(){
+ const st=pastDrillState,inp=$('#pastDrillInput');if(!inp||inp.disabled)return;
+ const o=st.items[st.i],ok=answerOK(inp.value,o.answer);inp.classList.add(ok?'good':'bad');inp.disabled=true;$('#pastDrillCheck').disabled=true;
+ if(ok){st.correct++;playSuccess();$('#pastDrillMessage').innerHTML=`<div class="drill-message ok">Yes - <strong>${o.answer}</strong>.</div>`}
+ else{playTryAgain();st.mistakes.push(o);$('#pastDrillMessage').innerHTML=`<div class="drill-message bad">Not quite. The past form is <strong>${o.answer}</strong>.</div>`}
+ $('#pastDrillNext').classList.remove('hidden');$('#pastDrillNext').focus();
+}
+function nextPastDrill(){pastDrillState.i++;renderPastDrillQuestion();}
+function finishPastDrill(){
+ const st=pastDrillState,total=st.items.length,host=$('#pastDrillHost'),miss=st.mistakes.length;
+ const score=Math.round(st.correct/total*100);saveDone('regularForms',score);playResult(st.correct,total);
+ host.innerHTML=`<div class="drill-finish"><h3>${miss===0?'Great - no mistakes this round!':'Round finished'}</h3><div class="bigscore">${st.correct}/${total}</div><p class="muted">${miss?`${miss} ${miss===1?'word needs':'words need'} another go.`:'You got every past form right.'}</p><div class="row" style="justify-content:center;margin-top:15px">${miss?`<button class="btn primary" onclick="repeatPastMistakes()">Repeat only mistakes</button>`:''}<button class="btn" onclick="startPastDrill()">Start a fresh mixed round</button></div></div>`;
+}
+function repeatPastMistakes(){const items=[...pastDrillState.mistakes];startPastDrill(items);}
+
+function renderContractions(){return `<div class="worksheet"><h2>SHORT FORMS / CONTRACTIONS</h2><p class="directions">Practise one at a time. Choose whether to make short forms, expand them, or mix both directions.</p><div id="contractionHost" class="drill-shell"><div class="mode-grid"><button class="mode-btn" onclick="startContractionDrill('contract')">Make short forms<br><span class="muted">I am &rarr; I'm</span></button><button class="mode-btn" onclick="startContractionDrill('expand')">Expand short forms<br><span class="muted">I'm &rarr; I am</span></button><button class="mode-btn" onclick="startContractionDrill('mixed')">Mixed directions<br><span class="muted">both ways</span></button></div><div class="note">There is an apostrophe button beside the answer box, so you do not need to find it on the keyboard.</div></div></div>`;}
+function buildContractionItems(mode,pairs=null){
+ const ps=pairs||shuffled(contractionPairs);
+ return ps.map((p,i)=>{
+  const direction=mode==='mixed'?(i%2===0?'contract':'expand'):mode;
+  if(direction==='expand')return {pair:p,direction,prompt:p.expandPrompt||`${p.short} &rarr; ?`,answer:p.expandAnswer||p.long};
+  return {pair:p,direction,prompt:p.contractPrompt||`${p.long} &rarr; ?`,answer:p.contractAnswer||p.short};
+ });
+}
+function startContractionDrill(mode='mixed',items=null){
+ const list=items&&items.length?items:buildContractionItems(mode);
+ contractionState={mode,items:[...list],i:0,correct:0,mistakes:[]};renderContractionQuestion();
+}
+function renderContractionQuestion(){
+ const st=contractionState,host=$('#contractionHost');if(!host)return;
+ if(st.i>=st.items.length){finishContractionDrill();return}
+ const o=st.items[st.i],label=o.direction==='expand'?'Expand the short form.':'Write the short form.';
+ host.innerHTML=`<div class="drill-progress"><span>Question <strong>${st.i+1}</strong> of ${st.items.length}</span><span>${st.correct} correct so far</span></div><div class="drill-card"><div class="muted">${label}</div><div class="drill-prompt">${o.prompt}</div><div class="drill-answer-row"><input id="contractionInput" class="drill-answer" autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter')checkContraction()"><button class="char-btn" type="button" onclick="insertApostrophe('contractionInput')" title="Insert apostrophe">' Apostrophe</button><button id="contractionCheck" class="btn primary" onclick="checkContraction()">Check</button></div><div id="contractionMessage"></div><div class="row" style="margin-top:14px"><button id="contractionNext" class="btn hidden" onclick="nextContraction()">Next &rarr;</button></div></div>`;
+ const inp=$('#contractionInput');if(inp)inp.focus();
+}
+function insertApostrophe(id){const el=document.getElementById(id);if(!el||el.disabled)return;const a=el.selectionStart??el.value.length,b=el.selectionEnd??a;el.value=el.value.slice(0,a)+"'"+el.value.slice(b);el.focus();el.setSelectionRange(a+1,a+1);playSelect();}
+function checkContraction(){
+ const st=contractionState,inp=$('#contractionInput');if(!inp||inp.disabled)return;
+ const o=st.items[st.i],ok=answerOK(inp.value,o.answer);inp.classList.add(ok?'good':'bad');inp.disabled=true;$('#contractionCheck').disabled=true;
+ if(ok){st.correct++;playSuccess();$('#contractionMessage').innerHTML=`<div class="drill-message ok">Yes - <strong>${o.answer}</strong>.</div>`}
+ else{playTryAgain();st.mistakes.push(o);$('#contractionMessage').innerHTML=`<div class="drill-message bad">Not quite. The answer is <strong>${o.answer}</strong>.</div>`}
+ $('#contractionNext').classList.remove('hidden');$('#contractionNext').focus();
+}
+function nextContraction(){contractionState.i++;renderContractionQuestion();}
+function finishContractionDrill(){
+ const st=contractionState,total=st.items.length,host=$('#contractionHost'),miss=st.mistakes.length;
+ const score=Math.round(st.correct/total*100);saveDone('contractions',score);playResult(st.correct,total);
+ host.innerHTML=`<div class="drill-finish"><h3>${miss===0?'Great - all short forms correct!':'Round finished'}</h3><div class="bigscore">${st.correct}/${total}</div><p class="muted">${miss?`${miss} ${miss===1?'item needs':'items need'} another go.`:'You got them all right.'}</p><div class="row" style="justify-content:center;margin-top:15px">${miss?`<button class="btn primary" onclick="repeatContractionMistakes()">Repeat only mistakes</button>`:''}<button class="btn" onclick="startContractionDrill('${st.mode}')">Fresh round</button><button class="btn" onclick="showContractionModes()">Change direction</button></div></div>`;
+}
+function repeatContractionMistakes(){const items=[...contractionState.mistakes];startContractionDrill(contractionState.mode,items);}
+function showContractionModes(){const host=$('#contractionHost');if(host)host.innerHTML=`<div class="mode-grid"><button class="mode-btn" onclick="startContractionDrill('contract')">Make short forms<br><span class="muted">I am &rarr; I'm</span></button><button class="mode-btn" onclick="startContractionDrill('expand')">Expand short forms<br><span class="muted">I'm &rarr; I am</span></button><button class="mode-btn" onclick="startContractionDrill('mixed')">Mixed directions<br><span class="muted">both ways</span></button></div>`;}
+
 function renderPastSentences(){return `<div class="worksheet"><h2>PAST SIMPLE - REGULAR VERBS</h2><div class="part"><h3>1. Complete the positive sentences with the Past Tense.</h3>${pastFill.map((r,i)=>`<div class="sheet-row"><div class="sentence-line"><span class="polarity pos">+</span>${i+1}. ${r[0]} <input class="gap-input answer" data-answer="${r[2]}"> ${r[1]}</div><div></div></div>`).join('')}</div><div class="part"><h3>2. Complete the negative sentences.</h3><p class="directions">Use <strong>didn't + base verb</strong>.</p>${pastNeg.map((r,i)=>`<div class="sheet-row"><div class="sentence-line"><span class="polarity neg">-</span>${i+1}. ${r[0]} <input class="gap-input answer" data-answer="${r[2]}"> ${r[1]}</div><div></div></div>`).join('')}</div><div class="part"><h3>3. Form positive sentences in the Past Tense.</h3>${pastBuild.map((r,i)=>`<div class="sheet-row"><div>${i+1}. ${r[0]}</div><input class="input answer" data-answer="${r[1]}"></div>`).join('')}</div></div><div id="feedback"></div><div class="row" style="margin-top:14px"><button class="btn primary" onclick="checkSimpleInputs()">Check worksheet</button></div>`;}
 function renderIrregular(){return `<div class="worksheet"><h2>PAST SIMPLE - IRREGULAR VERBS</h2><p class="directions">Complete the table with the Past Simple form.</p><table class="mini-table irregular-table"><tr><th>Present simple</th><th>Past simple</th></tr>${Object.entries(irregular).map(([v,a])=>`<tr><td>${v}</td><td><input class="small-input answer" data-answer="${a}" autocomplete="off"></td></tr>`).join('')}</table></div><div id="feedback"></div><div class="row" style="margin-top:14px"><button class="btn primary" onclick="checkSimpleInputs()">Check worksheet</button></div>`;}
 
